@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Hub de Sistemas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+
+/* ════════════════════════════════════════════
+   CSS VARIABLES — DARK / LIGHT
+════════════════════════════════════════════ */
+:root {
+  --bg:         #080c14;
+  --surface:    #0e1520;
+  --card:       #111827;
+  --card-hov:   #161f30;
+  --border:     rgba(99,179,237,0.13);
+  --accent:     #38bdf8;
+  --accent2:    #818cf8;
+  --accent3:    #34d399;
+  --danger:     #f87171;
+  --warn:       #fbbf24;
+  --text:       #e2e8f0;
+  --muted:      #64748b;
+  --r:          14px;
+  --shadow:     0 20px 40px rgba(0,0,0,.45);
+  --grid-col:   rgba(56,189,248,.025);
+}
+
+body.light {
+  --bg:       #f1f5f9;
+  --surface:  #ffffff;
+  --card:     #ffffff;
+  --card-hov: #f8fafc;
+  --border:   rgba(0,0,0,.09);
+  --accent:   #0284c7;
+  --accent2:  #6366f1;
+  --accent3:  #059669;
+  --danger:   #dc2626;
+  --warn:     #d97706;
+  --text:     #0f172a;
+  --muted:    #94a3b8;
+  --grid-col: rgba(2,132,199,.04);
+  --shadow:   0 12px 30px rgba(0,0,0,.12);
+}
+
+/* ════════════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background .3s, color .3s;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(var(--grid-col) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-col) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none; z-index: 0;
+}
+
+.wrap { position: relative; z-index: 1; }
+
+/* ════════════════════════════════════════════
+   HEADER
+════════════════════════════════════════════ */
+header {
+  position: sticky; top: 0; z-index: 200;
+  height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  background: rgba(8,12,20,.88);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  transition: background .3s;
+}
+body.light header { background: rgba(241,245,249,.92); }
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px; font-weight: 800;
+  letter-spacing: -.4px;
+  display: flex; align-items: center; gap: 9px;
+}
+.logo-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
+
+.hdr-right { display: flex; align-items: center; gap: 8px; }
+
+/* Sync status */
+.sync-badge {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 11px;
+  border-radius: 100px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all .2s;
+}
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.sync-badge.ok   .sync-dot { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
+.sync-badge.err  .sync-dot { background: var(--danger); }
+.sync-badge.busy .sync-dot { animation: spin .8s linear infinite; background: var(--warn); }
+@keyframes spin { to{ transform: rotate(360deg); } }
+
+.hdr-btn {
+  height: 36px; min-width: 36px; padding: 0 12px;
+  border: 1px solid var(--border);
+  background: var(--surface); color: var(--text);
+  border-radius: 10px; font-size: 13px;
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.hdr-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.btn-exit {
+  background: rgba(248,113,113,.12);
+  border-color: rgba(248,113,113,.3);
+  color: var(--danger);
+}
+.btn-exit:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+.btn-add-hdr {
+  background: var(--accent); color: #000;
+  border: none; font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 13px;
+  padding: 0 16px; height: 36px; border-radius: 10px;
+  cursor: pointer; display: flex; align-items: center; gap: 5px;
+  transition: box-shadow .2s, transform .15s;
+}
+.btn-add-hdr:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(56,189,248,.35); }
+body.light .btn-add-hdr { color: #fff; }
+
+/* ════════════════════════════════════════════
+   STATS BAR
+════════════════════════════════════════════ */
+.stats-bar {
+  display: flex; gap: 10px;
+  padding: 18px 28px 0;
+  flex-wrap: wrap;
+}
+.stat-chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 7px 14px; font-size: 12px;
+  display: flex; align-items: center; gap: 5px;
+  animation: fadeUp .4s ease both;
+}
+.stat-chip b { color: var(--accent); }
+
+/* ════════════════════════════════════════════
+   TOOLBAR
+════════════════════════════════════════════ */
+.toolbar {
+  padding: 16px 28px 0;
+  display: flex; gap: 10px;
+  align-items: center; flex-wrap: wrap;
+}
+
+.search-wrap { position: relative; flex: 1; min-width: 200px; }
+.search-wrap input {
+  width: 100%;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 11px; padding: 9px 14px 9px 38px;
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.search-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56,189,248,.1); }
+.search-wrap input::placeholder { color: var(--muted); }
+.search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; color: var(--muted); pointer-events: none;
+}
+
+.sort-sel {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 9px 12px;
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
+  outline: none; cursor: pointer;
+}
+
+.filter-row {
+  width: 100%;
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 0 28px 16px;
+  margin-top: 12px;
+}
+.pill {
+  padding: 6px 14px; border-radius: 100px;
+  font-size: 12px; font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface); color: var(--muted);
+  cursor: pointer; transition: all .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.pill:hover { border-color: var(--accent); color: var(--accent); }
+.pill.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+body.light .pill.active { color: #fff; }
+
+/* ════════════════════════════════════════════
+   GRID & CARD
+════════════════════════════════════════════ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px; padding: 0 28px 28px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px; position: relative;
+  transition: transform .25s, box-shadow .25s, border-color .25s;
+  animation: fadeUp .35s ease both;
+  overflow: hidden;
+}
+.card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% -20%, rgba(56,189,248,.07), transparent 65%);
+  pointer-events: none; opacity: 0; transition: opacity .3s;
+}
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: rgba(56,189,248,.28); }
+.card:hover::after { opacity: 1; }
+
+/* Número do sistema */
+.card-num {
+  position: absolute; top: 14px; left: 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 800;
+  color: var(--muted);
+  letter-spacing: .5px;
+}
+
+.card-top {
+  display: flex; align-items: flex-start;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.card-icon-wrap { position: absolute; top: 50%; left: 18px; transform: translateY(-100%); margin-top: -4px; }
+.card-icon-wrap { position: static; margin-right: auto; }
+
+.card-icon {
+  width: 48px; height: 48px; border-radius: 11px;
+  object-fit: cover;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.card-top-right { display: flex; align-items: center; gap: 6px; }
+
+.fav-btn {
+  background: none; border: none;
+  font-size: 17px; cursor: pointer; padding: 3px;
+  color: var(--muted); transition: transform .2s, color .2s;
+}
+.fav-btn:hover { transform: scale(1.3); }
+.fav-btn.on { color: var(--warn); }
+
+.order-num {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; width: 32px; height: 26px;
+  font-size: 12px; font-weight: 700;
+  color: var(--muted); text-align: center;
+  font-family: 'Syne', sans-serif;
+  outline: none; cursor: ns-resize;
+  transition: border-color .2s;
+}
+.order-num:focus { border-color: var(--accent); color: var(--accent); }
+
+.card-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 700;
+  color: var(--text); margin: 10px 0 4px;
+  padding-right: 8px;
+}
+.card-desc {
+  font-size: 13px; color: var(--muted);
+  line-height: 1.5; margin-bottom: 10px;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+  min-height: 40px;
+}
+
+.card-meta {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 12px;
+}
+.cat-badge {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 9px; border-radius: 100px;
+  letter-spacing: .4px; text-transform: uppercase;
+}
+.cat-Saúde         { background: rgba(52,211,153,.14);  color: #34d399; }
+.cat-Financeiro    { background: rgba(251,191,36,.14);  color: #fbbf24; }
+.cat-Produtividade { background: rgba(129,140,248,.14); color: #818cf8; }
+.cat-Outros        { background: rgba(56,189,248,.12);  color: #38bdf8; }
+
+.clk { font-size: 12px; color: var(--muted); }
+
+/* Links extras */
+.extra-links {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.xlink {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 9px; border-radius: 8px;
+  font-size: 11px; font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  background: var(--surface); color: var(--muted);
+  transition: all .2s; white-space: nowrap;
+}
+.xlink:hover { transform: translateY(-1px); }
+.xlink.sheets { color: #34d399; border-color: rgba(52,211,153,.3); }
+.xlink.sheets:hover { background: rgba(52,211,153,.1); }
+.xlink.script { color: #fbbf24; border-color: rgba(251,191,36,.3); }
+.xlink.script:hover { background: rgba(251,191,36,.1); }
+.xlink.github { color: #e2e8f0; border-color: rgba(226,232,240,.25); }
+.xlink.github:hover { background: rgba(226,232,240,.08); }
+.xlink.extra  { color: #818cf8; border-color: rgba(129,140,248,.3); }
+.xlink.extra:hover  { background: rgba(129,140,248,.1); }
+
+/* Ações */
+.card-actions { display: flex; gap: 6px; }
+.btn-open, .btn-edit, .btn-del {
+  flex: 1; padding: 8px 0;
+  border: none; border-radius: 9px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: filter .2s, transform .15s;
+}
+.btn-open:hover,.btn-edit:hover,.btn-del:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.btn-open { background: var(--accent3); color: #000; }
+.btn-edit { background: rgba(129,140,248,.18); color: #818cf8; }
+.btn-del  { background: rgba(248,113,113,.14); color: var(--danger); }
+body.light .btn-open { color: #fff; }
+
+/* ════════════════════════════════════════════
+   VIEWER (iframe)
+════════════════════════════════════════════ */
+.viewer {
+  margin: 0 28px 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  display: none;
+}
+.viewer.open { display: block; animation: fadeUp .3s ease; }
+
+.viewer-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex; align-items: center;
+  justify-content: space-between; gap: 10px;
+}
+.viewer-bar-left { display: flex; align-items: center; gap: 10px; }
+.viewer-dots { display: flex; gap: 5px; }
+.viewer-dots span {
+  width: 11px; height: 11px; border-radius: 50%;
+  display: block;
+}
+.viewer-dots span:nth-child(1) { background: #f87171; }
+.viewer-dots span:nth-child(2) { background: #fbbf24; }
+.viewer-dots span:nth-child(3) { background: #34d399; }
+.viewer-title { font-size: 13px; color: var(--muted); }
+.viewer-title b { color: var(--text); }
+.viewer-bar-right { display: flex; gap: 8px; }
+.btn-new-tab, .btn-close-view {
+  border: none; border-radius: 8px;
+  padding: 6px 12px; font-size: 12px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all .2s;
+}
+.btn-new-tab  { background: rgba(56,189,248,.12); color: var(--accent); }
+.btn-new-tab:hover { background: rgba(56,189,248,.2); }
+.btn-close-view { background: rgba(248,113,113,.12); color: var(--danger); }
+.btn-close-view:hover { background: var(--danger); color: #fff; }
+#frame { width: 100%; height: 550px; border: none; display: block; }
+
+/* ════════════════════════════════════════════
+   MODAL
+════════════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 26px; width: 100%; max-width: 520px;
+  max-height: 92vh; overflow-y: auto;
+  transform: translateY(18px) scale(.97);
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.overlay.open .modal { transform: translateY(0) scale(1); }
+
+.modal-hdr {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px;
+}
+.modal-hdr h2 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+.modal-x {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--muted); border-radius: 8px;
+  width: 30px; height: 30px; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: color .2s, border-color .2s;
+}
+.modal-x:hover { color: var(--danger); border-color: var(--danger); }
+
+/* Tabs dentro do modal */
+.modal-tabs {
+  display: flex; gap: 4px;
+  background: var(--surface); border-radius: 10px;
+  padding: 4px; margin-bottom: 18px;
+}
+.mtab {
+  flex: 1; text-align: center; padding: 7px;
+  border-radius: 7px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+  color: var(--muted); font-family: 'Syne', sans-serif;
+}
+.mtab.active { background: var(--accent); color: #000; }
+body.light .mtab.active { color: #fff; }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--muted); margin-bottom: 5px;
+  letter-spacing: .6px; text-transform: uppercase;
+}
+.field input, .field textarea, .field select {
+  width: 100%;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 9px; padding: 9px 13px;
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(56,189,248,.09);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+.field select option { background: #1e293b; }
+.field textarea { resize: vertical; min-height: 76px; }
+
+.link-row { display: flex; gap: 8px; align-items: flex-start; }
+.link-row .link-icon {
+  width: 38px; height: 38px; margin-top: 0;
+  border-radius: 9px; border: 1px solid var(--border);
+  background: var(--surface); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; align-self: flex-end; margin-bottom: 14px;
+}
+
+.modal-foot { display: flex; gap: 8px; margin-top: 18px; }
+.btn-save {
+  flex: 1; background: var(--accent); color: #000;
+  border: none; border-radius: 10px; padding: 12px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+  cursor: pointer; transition: box-shadow .2s, transform .15s;
+}
+.btn-save:hover { box-shadow: 0 8px 22px rgba(56,189,248,.35); transform: translateY(-1px); }
+body.light .btn-save { color: #fff; }
+.btn-cancel {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--muted); border-radius: 10px;
+  padding: 12px 18px; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: color .2s;
+}
+.btn-cancel:hover { color: var(--text); }
+
+/* Config modal */
+.config-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0; border-bottom: 1px solid var(--border);
+}
+.config-row:last-child { border-bottom: none; }
+.config-label { font-size: 14px; color: var(--text); }
+.config-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.toggle {
+  width: 42px; height: 24px; border-radius: 100px;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; position: relative; transition: background .3s;
+}
+.toggle.on { background: var(--accent); border-color: var(--accent); }
+.toggle::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: white; top: 2px; left: 2px;
+  transition: transform .3s;
+}
+.toggle.on::after { transform: translateX(18px); }
+
+/* ════════════════════════════════════════════
+   EMPTY STATE
+════════════════════════════════════════════ */
+.empty {
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 60px 20px;
+}
+.empty-icon { font-size: 52px; margin-bottom: 14px; }
+.empty h3 { font-family: 'Syne', sans-serif; font-size: 18px; margin-bottom: 6px; }
+.empty p  { color: var(--muted); font-size: 14px; }
+
+/* ════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 22px; right: 22px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 11px 18px;
+  font-size: 13px; z-index: 9999;
+  display: flex; align-items: center; gap: 9px;
+  transform: translateY(70px); opacity: 0;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none; max-width: 320px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.ok  { border-color: rgba(52,211,153,.4); }
+.toast.err { border-color: rgba(248,113,113,.4); }
+.toast.warn{ border-color: rgba(251,191,36,.4); }
+
+/* ════════════════════════════════════════════
+   LOCK SCREEN
+════════════════════════════════════════════ */
+.lock {
+  position: fixed; inset: 0; z-index: 900;
+  background: var(--bg);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 20px;
+}
+.lock.show { display: flex; animation: fadeUp .3s ease; }
+.lock-icon { font-size: 64px; }
+.lock h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; }
+.lock p   { color: var(--muted); font-size: 14px; }
+.btn-unlock {
+  background: var(--accent); color: #000;
+  border: none; border-radius: 12px;
+  padding: 13px 32px;
+  font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px;
+  cursor: pointer; margin-top: 8px;
+  transition: box-shadow .2s, transform .15s;
+}
+.btn-unlock:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(56,189,248,.4); }
+body.light .btn-unlock { color: #fff; }
+
+/* ════════════════════════════════════════════
+   ANIMATIONS
+════════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.card:nth-child(1)  { animation-delay:.04s }
+.card:nth-child(2)  { animation-delay:.08s }
+.card:nth-child(3)  { animation-delay:.12s }
+.card:nth-child(4)  { animation-delay:.16s }
+.card:nth-child(5)  { animation-delay:.20s }
+.card:nth-child(6)  { animation-delay:.24s }
+.card:nth-child(7)  { animation-delay:.28s }
+.card:nth-child(8)  { animation-delay:.32s }
+
+/* ════════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════ */
+@media(max-width:640px){
+  header,.stats-bar,.toolbar,.filter-row,.grid,.viewer { padding-left:14px; padding-right:14px; }
+  .grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .logo span.logo-label { display:none; }
+}
+@media(max-width:400px){
+  .grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <span class="logo-label">MEU HUB DE SISTEMAS</span>
+  </div>
+  <div class="hdr-right">
+    <div class="sync-badge" id="syncBadge" onclick="syncManual()" title="Clique para sincronizar">
+      <span class="sync-dot"></span>
+      <span id="syncLabel">Offline</span>
+    </div>
+    <button class="hdr-btn" onclick="toggleTheme()" id="themeBtn" title="Modo claro/escuro">🌙</button>
+    <button class="hdr-btn" onclick="openConfig()" title="Configurações">⚙️</button>
+    <button class="hdr-btn btn-exit" onclick="sair()" title="Sair / Bloquear">🔒 Sair</button>
+    <button class="btn-add-hdr" onclick="openModal()">＋ Novo</button>
+  </div>
+</header>
+
+<!-- ═══════════════ STATS ═══════════════ -->
+<div class="stats-bar" id="statsBar"></div>
+
+<!-- ═══════════════ TOOLBAR ═══════════════ -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input id="busca" placeholder="Buscar sistemas..." oninput="render()">
+  </div>
+  <select class="sort-sel" id="sortSel" onchange="render()">
+    <option value="ordem">🔢 Por número</option>
+    <option value="fav">⭐ Favoritos</option>
+    <option value="cliques">🔥 Mais usados</option>
+    <option value="az">A–Z</option>
+    <option value="recente">🕐 Recentes</option>
+  </select>
+</div>
+<div class="filter-row" id="filterRow"></div>
+
+<!-- ═══════════════ GRID ═══════════════ -->
+<div class="grid" id="lista"></div>
+
+<!-- ═══════════════ VIEWER ═══════════════ -->
+<div class="viewer" id="viewer">
+  <div class="viewer-bar">
+    <div class="viewer-bar-left">
+      <div class="viewer-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="viewer-title">Abrindo: <b id="viewerTitle">—</b></div>
+    </div>
+    <div class="viewer-bar-right">
+      <button class="btn-new-tab" onclick="abrirNovaAba()" title="Abrir em nova aba">↗ Nova aba</button>
+      <button class="btn-close-view" onclick="fecharViewer()">✕ Fechar sistema</button>
+    </div>
+  </div>
+  <iframe id="frame" src="about:blank"></iframe>
+</div>
+
+<!-- ═══════════════ MODAL ADD/EDIT ═══════════════ -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+<div class="modal">
+  <div class="modal-hdr">
+    <h2 id="modalTitle">Novo Sistema</h2>
+    <div class="modal-x" onclick="closeModal()">✕</div>
+  </div>
+
+  <div class="modal-tabs">
+    <div class="mtab active" onclick="switchTab(0)">📋 Geral</div>
+    <div class="mtab" onclick="switchTab(1)">🔗 Links Extras</div>
+    <div class="mtab" onclick="switchTab(2)">⚙️ Avançado</div>
+  </div>
+
+  <!-- Tab 0: Geral -->
+  <div class="tab-pane active" id="tab0">
+    <div class="field"><label>Nome do Sistema *</label>
+      <input id="mNome" placeholder="Ex: Sistema de Pacientes">
+    </div>
+    <div class="field"><label>Link Principal *</label>
+      <input id="mLink" placeholder="https://...">
+    </div>
+    <div class="field"><label>Ícone (URL da imagem)</label>
+      <input id="mIcone" placeholder="https://... (opcional)">
+    </div>
+    <div class="field"><label>Descrição</label>
+      <textarea id="mDesc" placeholder="Breve descrição do sistema"></textarea>
+    </div>
+    <div class="field"><label>Categoria</label>
+      <select id="mCat">
+        <option>Saúde</option>
+        <option>Financeiro</option>
+        <option>Produtividade</option>
+        <option>Outros</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tab 1: Links Extras -->
+  <div class="tab-pane" id="tab1">
+    <div class="link-row">
+      <div class="link-icon">📊</div>
+      <div class="field" style="flex:1"><label>Planilha Google Sheets</label>
+        <input id="mLinkPlanilha" placeholder="https://docs.google.com/spreadsheets/...">
+      </div>
+    </div>
+    <div class="link-row">
+      <div class="link-icon">⚡</div>
+      <div class="field" style="flex:1"><label>Apps Script</label>
+        <input id="mLinkScript" placeholder="https://script.google.com/...">
+      </div>
+    </div>
+    <div class="link-row">
+      <div class="link-icon">🐙</div>
+      <div class="field" style="flex:1"><label>GitHub / Repositório</label>
+        <input id="mLinkGithub" placeholder="https://github.com/...">
+      </div>
+    </div>
+    <div class="link-row">
+      <div class="link-icon">🌐</div>
+      <div class="field" style="flex:1"><label>Link Extra (Netlify, Vercel, etc.)</label>
+        <input id="mLinkExtra" placeholder="https://...">
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab 2: Avançado -->
+  <div class="tab-pane" id="tab2">
+    <div class="field"><label>Número / Ordem</label>
+      <input id="mOrdem" type="number" min="1" placeholder="Ex: 1">
+    </div>
+    <div class="field"><label>ID Único (gerado automaticamente)</label>
+      <input id="mId" placeholder="Auto" readonly style="opacity:.5;cursor:not-allowed">
+    </div>
+    <div style="background:var(--surface);border-radius:10px;padding:12px;font-size:13px;color:var(--muted)">
+      💡 O ID único garante que o sistema seja reconhecido na sincronização com o Google Sheets sem duplicar dados.
+    </div>
+  </div>
+
+  <div class="modal-foot">
+    <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+    <button class="btn-save" onclick="salvarModal()">💾 Salvar Sistema</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ MODAL CONFIG ═══════════════ -->
+<div class="overlay" id="overlayConfig" onclick="overlayConfigClick(event)">
+<div class="modal">
+  <div class="modal-hdr">
+    <h2>⚙️ Configurações</h2>
+    <div class="modal-x" onclick="closeConfig()">✕</div>
+  </div>
+
+  <div class="config-row">
+    <div>
+      <div class="config-label">🌙 Modo Escuro</div>
+      <div class="config-sub">Alterna entre tema escuro e claro</div>
+    </div>
+    <div class="toggle" id="toggleTheme" onclick="toggleTheme()"></div>
+  </div>
+
+  <div class="config-row">
+    <div>
+      <div class="config-label">🔄 Auto-Sincronizar com Sheets</div>
+      <div class="config-sub">Sincroniza automaticamente ao salvar</div>
+    </div>
+    <div class="toggle on" id="toggleAutoSync" onclick="toggleAutoSync()"></div>
+  </div>
+
+  <div class="field" style="margin-top:16px">
+    <label>🌐 URL do Apps Script (API)</label>
+    <input id="cfgApiUrl" placeholder="https://script.google.com/macros/s/..." oninput="salvarConfig()">
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+    <button class="btn-new-tab" style="padding:8px 14px;font-size:13px" onclick="testarConexao()">🔌 Testar conexão</button>
+    <button class="btn-new-tab" style="padding:8px 14px;font-size:13px" onclick="syncManual()">☁️ Sincronizar agora</button>
+    <button class="btn-close-view" style="padding:8px 14px;font-size:13px;background:rgba(248,113,113,.1)" onclick="importarSheets()">⬇️ Importar do Sheets</button>
+  </div>
+
+  <div style="margin-top:18px;background:var(--surface);border-radius:10px;padding:14px;font-size:12px;color:var(--muted);line-height:1.7">
+    <b style="color:var(--text)">📖 Como configurar:</b><br>
+    1. Abra sua planilha Google Sheets<br>
+    2. <b>Extensões → Apps Script</b><br>
+    3. Cole o código do arquivo <code>apps-script.gs</code><br>
+    4. <b>Implantar → Nova implantação → App da Web</b><br>
+    5. Copie a URL gerada e cole acima<br>
+    6. Clique em "Testar conexão"
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:18px">
+    <button class="btn-cancel" style="flex:1" onclick="exportarJSON()">📤 Exportar JSON</button>
+    <button class="btn-cancel" style="flex:1;color:var(--danger);border-color:rgba(248,113,113,.3)" onclick="limparDados()">🗑️ Limpar tudo</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════ LOCK SCREEN ═══════════════ -->
+<div class="lock" id="lockScreen">
+  <div class="lock-icon">🔒</div>
+  <h2>Hub bloqueado</h2>
+  <p>Clique abaixo para continuar</p>
+  <button class="btn-unlock" onclick="desbloquear()">🔓 Desbloquear</button>
+</div>
+
+<!-- ═══════════════ TOAST ═══════════════ -->
+<div class="toast" id="toast"></div>
+
+</div><!-- .wrap -->
+
+<script>
+// ════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ════════════════════════════════════════════
+let sistemas = [];
+let filtroAtivo = "";
+let editIdx = -1;
+let tabAtiva = 0;
+let viewerLink = "";
+let config = {
+  apiUrl: "",
+  autoSync: true,
+  darkMode: true
+};
+
+// ════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════
+function init() {
+  carregarConfig();
+  carregarLocal();
+  aplicarTema();
+  render();
+  if (config.apiUrl) {
+    setTimeout(() => importarSheets(true), 800); // silencioso
+  }
+}
+
+// ════════════════════════════════════════════
+//  PERSISTÊNCIA LOCAL
+// ════════════════════════════════════════════
+function carregarLocal() {
+  try {
+    sistemas = JSON.parse(localStorage.getItem("hub_sistemas_v2")) || [];
+  } catch { sistemas = []; }
+}
+
+function salvarLocal() {
+  localStorage.setItem("hub_sistemas_v2", JSON.stringify(sistemas));
+}
+
+function carregarConfig() {
+  try {
+    const c = JSON.parse(localStorage.getItem("hub_config_v2"));
+    if (c) config = { ...config, ...c };
+  } catch {}
+  document.getElementById("cfgApiUrl").value = config.apiUrl || "";
+  atualizarToggleAutoSync();
+  atualizarToggleTheme();
+}
+
+function salvarConfig() {
+  config.apiUrl = document.getElementById("cfgApiUrl").value.trim();
+  localStorage.setItem("hub_config_v2", JSON.stringify(config));
+}
+
+// ════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════
+function render() {
+  const busca = document.getElementById("busca").value.toLowerCase();
+  const sort  = document.getElementById("sortSel").value;
+
+  // Stats
+  const total  = sistemas.length;
+  const favs   = sistemas.filter(s=>s.favorito).length;
+  const totClk = sistemas.reduce((a,s)=>a+(s.cliques||0),0);
+  const top    = [...sistemas].sort((a,b)=>(b.cliques||0)-(a.cliques||0))[0];
+
+  let sHTML = `<div class="stat-chip">🗂️ <b>${total}</b> sistemas</div>`;
+  if(favs)   sHTML += `<div class="stat-chip">⭐ <b>${favs}</b> favoritos</div>`;
+  if(totClk) sHTML += `<div class="stat-chip">👁 <b>${totClk}</b> acessos</div>`;
+  if(top&&top.cliques) sHTML += `<div class="stat-chip">🔥 Mais usado: <b>${top.nome}</b></div>`;
+  document.getElementById("statsBar").innerHTML = sHTML;
+
+  // Filtro pills
+  const cats = [...new Set(sistemas.map(s=>s.categoria))];
+  let fHTML = `<button class="pill ${filtroAtivo===''?'active':''}" onclick="setFiltro('')">Todos (${total})</button>`;
+  cats.forEach(c=>{
+    const n = sistemas.filter(s=>s.categoria===c).length;
+    fHTML += `<button class="pill ${filtroAtivo===c?'active':''}" onclick="setFiltro('${c}')">${c} (${n})</button>`;
+  });
+  document.getElementById("filterRow").innerHTML = fHTML;
+
+  // Filtragem
+  let lista = sistemas.map((s,i)=>({...s,_i:i}));
+  if(filtroAtivo) lista = lista.filter(s=>s.categoria===filtroAtivo);
+  if(busca) lista = lista.filter(s=>
+    s.nome.toLowerCase().includes(busca) ||
+    (s.descricao||'').toLowerCase().includes(busca) ||
+    (s.categoria||'').toLowerCase().includes(busca)
+  );
+
+  // Ordenação
+  if(sort==='ordem')   lista.sort((a,b)=>(a.ordem||999)-(b.ordem||999));
+  if(sort==='fav')     lista.sort((a,b)=>(b.favorito===true)-(a.favorito===true));
+  if(sort==='cliques') lista.sort((a,b)=>(b.cliques||0)-(a.cliques||0));
+  if(sort==='az')      lista.sort((a,b)=>a.nome.localeCompare(b.nome,'pt'));
+  if(sort==='recente') lista.sort((a,b)=>b._i - a._i);
+
+  if(!lista.length){
+    document.getElementById("lista").innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">${busca?'🔍':'🚀'}</div>
+        <h3>${busca?'Nenhum resultado':'Nenhum sistema ainda'}</h3>
+        <p>${busca?'Tente outra palavra-chave.':'Clique em "+ Novo" para começar.'}</p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById("lista").innerHTML = lista.map(s=>{
+    const extraLinks = buildExtraLinks(s);
+    const iconUrl = s.icone
+      ? `src="${s.icone}" onerror="this.src='';this.style.display='none';this.nextElementSibling.style.display='flex'"`
+      : `src="" style="display:none"`;
+
+    return `<div class="card" id="card-${s._i}">
+      <div class="card-top">
+        <img class="card-icon" ${iconUrl} alt="">
+        <div class="initials-icon" style="display:${s.icone?'none':'flex'};width:48px;height:48px;border-radius:11px;background:var(--surface);border:1px solid var(--border);align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--accent)">
+          ${s.nome.charAt(0).toUpperCase()}
+        </div>
+        <div class="card-top-right" style="margin-left:auto">
+          <input class="order-num" type="number" value="${s.ordem||s._i+1}"
+            min="1" title="Número de ordem"
+            onchange="mudarOrdem(${s._i}, this.value)"
+            onclick="this.select()">
+          <button class="fav-btn ${s.favorito?'on':''}" onclick="favoritar(${s._i})" title="Favoritar">
+            ${s.favorito?'★':'☆'}
+          </button>
+        </div>
+      </div>
+      <div class="card-name">${s.nome}</div>
+      <div class="card-desc">${s.descricao||'<span style="opacity:.35;font-style:italic">Sem descrição</span>'}</div>
+      <div class="card-meta">
+        <span class="cat-badge cat-${s.categoria}">${s.categoria}</span>
+        <span class="clk">👁 ${s.cliques||0}</span>
+      </div>
+      ${extraLinks?`<div class="extra-links">${extraLinks}</div>`:''}
+      <div class="card-actions">
+        <button class="btn-open" onclick="abrir(${s._i})">▶ Abrir</button>
+        <button class="btn-edit" onclick="abrirModal(${s._i})">✏️</button>
+        <button class="btn-del"  onclick="excluir(${s._i})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildExtraLinks(s){
+  let html = '';
+  if(s.linkPlanilha) html += `<a href="${s.linkPlanilha}" target="_blank" class="xlink sheets">📊 Sheets</a>`;
+  if(s.linkScript)   html += `<a href="${s.linkScript}"   target="_blank" class="xlink script">⚡ Script</a>`;
+  if(s.linkGithub)   html += `<a href="${s.linkGithub}"   target="_blank" class="xlink github">🐙 GitHub</a>`;
+  if(s.linkExtra)    html += `<a href="${s.linkExtra}"    target="_blank" class="xlink extra">🌐 Extra</a>`;
+  return html;
+}
+
+function setFiltro(c){ filtroAtivo=c; render(); }
+
+// ════════════════════════════════════════════
+//  AÇÕES DOS CARDS
+// ════════════════════════════════════════════
+function abrir(i){
+  sistemas[i].cliques = (sistemas[i].cliques||0)+1;
+  salvarLocal();
+  if(config.apiUrl && config.autoSync) apiPost({acao:'clique',id:sistemas[i].id});
+
+  viewerLink = sistemas[i].link;
+  document.getElementById("viewerTitle").textContent = sistemas[i].nome;
+  document.getElementById("frame").src = sistemas[i].link;
+  const v = document.getElementById("viewer");
+  v.classList.add("open");
+  setTimeout(()=>v.scrollIntoView({behavior:'smooth'}), 100);
+  render();
+}
+
+function abrirNovaAba(){
+  if(viewerLink) window.open(viewerLink,'_blank');
+}
+
+function fecharViewer(){
+  document.getElementById("viewer").classList.remove("open");
+  document.getElementById("frame").src = "about:blank";
+  viewerLink = "";
+}
+
+function favoritar(i){
+  sistemas[i].favorito = !sistemas[i].favorito;
+  salvarLocal();
+  if(config.apiUrl && config.autoSync) syncUm(sistemas[i]);
+  toast(sistemas[i].favorito?'⭐ Favoritado!':'☆ Removido dos favoritos','ok');
+  render();
+}
+
+function mudarOrdem(i, val){
+  sistemas[i].ordem = parseInt(val)||1;
+  salvarLocal();
+  if(config.apiUrl && config.autoSync) syncUm(sistemas[i]);
+}
+
+function excluir(i){
+  if(!confirm(`Excluir "${sistemas[i].nome}"?`)) return;
+  const id = sistemas[i].id;
+  sistemas.splice(i,1);
+  salvarLocal();
+  if(config.apiUrl && config.autoSync) apiPost({acao:'excluir', id});
+  toast('🗑️ Sistema excluído','err');
+  render();
+}
+
+// ════════════════════════════════════════════
+//  MODAL ADD/EDIT
+// ════════════════════════════════════════════
+function openModal(){ abrirModal(-1); }
+
+function abrirModal(idx){
+  editIdx = idx;
+  const edit = idx >= 0;
+  document.getElementById("modalTitle").textContent = edit ? '✏️ Editar Sistema' : '➕ Novo Sistema';
+
+  if(edit){
+    const s = sistemas[idx];
+    document.getElementById("mNome").value = s.nome||'';
+    document.getElementById("mLink").value = s.link||'';
+    document.getElementById("mIcone").value = s.icone||'';
+    document.getElementById("mDesc").value = s.descricao||'';
+    document.getElementById("mCat").value  = s.categoria||'Outros';
+    document.getElementById("mLinkPlanilha").value = s.linkPlanilha||'';
+    document.getElementById("mLinkScript").value   = s.linkScript||'';
+    document.getElementById("mLinkGithub").value   = s.linkGithub||'';
+    document.getElementById("mLinkExtra").value    = s.linkExtra||'';
+    document.getElementById("mOrdem").value = s.ordem||'';
+    document.getElementById("mId").value = s.id||'';
+  } else {
+    ['mNome','mLink','mIcone','mDesc','mLinkPlanilha','mLinkScript','mLinkGithub','mLinkExtra','mOrdem'].forEach(id=>{
+      document.getElementById(id).value='';
+    });
+    document.getElementById("mCat").value = 'Saúde';
+    document.getElementById("mId").value = 'Auto';
+  }
+  switchTab(0);
+  document.getElementById("overlay").classList.add("open");
+}
+
+function closeModal(){ document.getElementById("overlay").classList.remove("open"); }
+function overlayClick(e){ if(e.target.id==='overlay') closeModal(); }
+
+function switchTab(n){
+  tabAtiva = n;
+  document.querySelectorAll('.tab-pane').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.mtab').forEach((t,i)=>t.classList.toggle('active',i===n));
+}
+
+function salvarModal(){
+  const nome = document.getElementById("mNome").value.trim();
+  const link = document.getElementById("mLink").value.trim();
+
+  if(!nome||!link){ toast('⚠️ Preencha nome e link!','err'); switchTab(0); return; }
+
+  const obj = {
+    nome,
+    link,
+    icone:         document.getElementById("mIcone").value.trim(),
+    descricao:     document.getElementById("mDesc").value.trim(),
+    categoria:     document.getElementById("mCat").value,
+    linkPlanilha:  document.getElementById("mLinkPlanilha").value.trim(),
+    linkScript:    document.getElementById("mLinkScript").value.trim(),
+    linkGithub:    document.getElementById("mLinkGithub").value.trim(),
+    linkExtra:     document.getElementById("mLinkExtra").value.trim(),
+    ordem:         parseInt(document.getElementById("mOrdem").value)||0,
+  };
+
+  if(editIdx >= 0){
+    obj.id      = sistemas[editIdx].id;
+    obj.cliques = sistemas[editIdx].cliques||0;
+    obj.favorito= sistemas[editIdx].favorito||false;
+    obj.dataCriacao = sistemas[editIdx].dataCriacao;
+    if(!obj.ordem) obj.ordem = sistemas[editIdx].ordem || editIdx+1;
+    sistemas[editIdx] = obj;
+    toast('✅ Sistema atualizado!','ok');
+  } else {
+    obj.id = gerarId();
+    obj.cliques = 0;
+    obj.favorito = false;
+    obj.dataCriacao = new Date().toISOString();
+    if(!obj.ordem) obj.ordem = sistemas.length+1;
+    sistemas.push(obj);
+    toast('🚀 Sistema adicionado!','ok');
+  }
+
+  salvarLocal();
+  if(config.apiUrl && config.autoSync) syncUm(obj);
+  closeModal();
+  render();
+}
+
+// ════════════════════════════════════════════
+//  MODAL CONFIG
+// ════════════════════════════════════════════
+function openConfig(){ document.getElementById("overlayConfig").classList.add("open"); }
+function closeConfig(){ document.getElementById("overlayConfig").classList.remove("open"); }
+function overlayConfigClick(e){ if(e.target.id==='overlayConfig') closeConfig(); }
+
+// ════════════════════════════════════════════
+//  TEMA
+// ════════════════════════════════════════════
+function toggleTheme(){
+  config.darkMode = !config.darkMode;
+  aplicarTema();
+  salvarConfig();
+}
+
+function aplicarTema(){
+  document.body.classList.toggle('light', !config.darkMode);
+  document.getElementById("themeBtn").textContent = config.darkMode ? '🌙' : '☀️';
+  atualizarToggleTheme();
+}
+
+function atualizarToggleTheme(){
+  const t = document.getElementById("toggleTheme");
+  if(t) t.classList.toggle('on', config.darkMode);
+}
+
+// ════════════════════════════════════════════
+//  AUTO SYNC TOGGLE
+// ════════════════════════════════════════════
+function toggleAutoSync(){
+  config.autoSync = !config.autoSync;
+  atualizarToggleAutoSync();
+  salvarConfig();
+  toast(config.autoSync?'🔄 Auto-sync ativado':'⏸️ Auto-sync pausado','warn');
+}
+function atualizarToggleAutoSync(){
+  const t = document.getElementById("toggleAutoSync");
+  if(t) t.classList.toggle('on', config.autoSync);
+}
+
+// ════════════════════════════════════════════
+//  LOCK / SAIR
+// ════════════════════════════════════════════
+function sair(){
+  fecharViewer();
+  document.getElementById("lockScreen").classList.add("show");
+}
+function desbloquear(){
+  document.getElementById("lockScreen").classList.remove("show");
+}
+
+// ════════════════════════════════════════════
+//  SYNC COM GOOGLE SHEETS
+// ════════════════════════════════════════════
+function setSyncStatus(status, label){
+  const b = document.getElementById("syncBadge");
+  const l = document.getElementById("syncLabel");
+  b.className = `sync-badge ${status}`;
+  l.textContent = label;
+}
+
+async function apiGet(params=''){
+  const url = config.apiUrl + (params?'?'+params:'');
+  const resp = await fetch(url, {mode:'cors'});
+  if(!resp.ok) throw new Error('HTTP '+resp.status);
+  return resp.json();
+}
+
+async function apiPost(body){
+  const resp = await fetch(config.apiUrl, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(body),
+    mode:'cors'
+  });
+  if(!resp.ok) throw new Error('HTTP '+resp.status);
+  return resp.json();
+}
+
+async function testarConexao(){
+  salvarConfig();
+  if(!config.apiUrl){ toast('⚠️ Cole a URL do Apps Script primeiro','err'); return; }
+  setSyncStatus('busy','Testando...');
+  try {
+    const r = await apiGet('acao=ping');
+    if(r.ok){
+      setSyncStatus('ok','Conectado');
+      toast('✅ Conexão com o Sheets funcionando!','ok');
+    } else throw new Error(r.erro||'Resposta inválida');
+  } catch(e){
+    setSyncStatus('err','Erro');
+    toast('❌ Falha: '+e.message,'err');
+  }
+}
+
+// Exporta tudo para o Sheets
+async function syncManual(){
+  salvarConfig();
+  if(!config.apiUrl){ toast('⚠️ Configure a URL do Apps Script','err'); openConfig(); return; }
+  setSyncStatus('busy','Sincronizando...');
+  try {
+    const r = await apiPost({acao:'salvar_tudo', sistemas});
+    if(r.ok){
+      setSyncStatus('ok','Sincronizado '+horaAtual());
+      toast('☁️ '+r.total+' sistemas sincronizados!','ok');
+    } else throw new Error(r.erro||'Erro desconhecido');
+  } catch(e){
+    setSyncStatus('err','Falha');
+    toast('❌ Sync falhou: '+e.message,'err');
+  }
+}
+
+// Upsert de um sistema individual
+async function syncUm(s){
+  if(!config.apiUrl) return;
+  try {
+    await apiPost({acao:'upsert', sistema:s});
+    setSyncStatus('ok','Salvo '+horaAtual());
+  } catch(e){
+    setSyncStatus('err','Falha');
+  }
+}
+
+// Importa dados do Sheets para o dashboard (sobrescreve)
+async function importarSheets(silencioso=false){
+  salvarConfig();
+  if(!config.apiUrl){ if(!silencioso) toast('⚠️ Configure a URL do Apps Script','err'); return; }
+  setSyncStatus('busy','Carregando...');
+  try {
+    const r = await apiGet();
+    if(r.ok && Array.isArray(r.sistemas)){
+      if(r.sistemas.length > 0){
+        sistemas = r.sistemas;
+        salvarLocal();
+        render();
+        setSyncStatus('ok','Importado '+horaAtual());
+        if(!silencioso) toast('⬇️ '+r.total+' sistemas importados do Sheets!','ok');
+      } else {
+        setSyncStatus('ok','Conectado');
+        if(!silencioso) toast('ℹ️ Sheets vazio — use "Sincronizar agora" para enviar seus dados','warn');
+      }
+    } else throw new Error(r.erro||'Formato inválido');
+  } catch(e){
+    setSyncStatus('err','Falha');
+    if(!silencioso) toast('❌ Importação falhou: '+e.message,'err');
+  }
+}
+
+// ════════════════════════════════════════════
+//  EXPORT / IMPORT / LIMPAR
+// ════════════════════════════════════════════
+function exportarJSON(){
+  const blob = new Blob([JSON.stringify(sistemas,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'hub-sistemas-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  toast('📤 JSON exportado!','ok');
+}
+
+function limparDados(){
+  if(!confirm('⚠️ Isso vai apagar TODOS os sistemas do dashboard local.\n\nOs dados no Google Sheets não serão afetados.\n\nContinuar?')) return;
+  sistemas = [];
+  salvarLocal();
+  render();
+  toast('🗑️ Dados locais apagados','err');
+}
+
+// ════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════
+function gerarId(){
+  return 'sys_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+}
+
+function horaAtual(){
+  return new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+let toastTmr;
+function toast(msg, tipo='ok'){
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = `toast ${tipo} show`;
+  clearTimeout(toastTmr);
+  toastTmr = setTimeout(()=>el.classList.remove('show'), 3200);
+}
+
+// Teclado
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    closeModal();
+    closeConfig();
+  }
+});
+
+// ════════════════════════════════════════════
+//  START
+// ════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
