@@ -242,7 +242,6 @@ body.light .pill.active { color: #fff; }
 .card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: rgba(56,189,248,.28); }
 .card:hover::after { opacity: 1; }
 
-/* Número do sistema */
 .card-num {
   position: absolute; top: 14px; left: 14px;
   font-family: 'Syne', sans-serif;
@@ -257,7 +256,6 @@ body.light .pill.active { color: #fff; }
   margin-bottom: 12px;
 }
 
-.card-icon-wrap { position: absolute; top: 50%; left: 18px; transform: translateY(-100%); margin-top: -4px; }
 .card-icon-wrap { position: static; margin-right: auto; }
 
 .card-icon {
@@ -319,7 +317,6 @@ body.light .pill.active { color: #fff; }
 
 .clk { font-size: 12px; color: var(--muted); }
 
-/* Links extras */
 .extra-links {
   display: flex; gap: 6px; flex-wrap: wrap;
   margin-bottom: 10px;
@@ -343,7 +340,6 @@ body.light .pill.active { color: #fff; }
 .xlink.extra  { color: #818cf8; border-color: rgba(129,140,248,.3); }
 .xlink.extra:hover  { background: rgba(129,140,248,.1); }
 
-/* Ações */
 .card-actions { display: flex; gap: 6px; }
 .btn-open, .btn-edit, .btn-del {
   flex: 1; padding: 8px 0;
@@ -439,7 +435,6 @@ body.light .btn-open { color: #fff; }
 }
 .modal-x:hover { color: var(--danger); border-color: var(--danger); }
 
-/* Tabs dentro do modal */
 .modal-tabs {
   display: flex; gap: 4px;
   background: var(--surface); border-radius: 10px;
@@ -831,6 +826,11 @@ body.light .btn-unlock { color: #fff; }
 
 <script>
 // ════════════════════════════════════════════
+//  URL DO APPS SCRIPT — EMBUTIDA
+// ════════════════════════════════════════════
+const API_URL_PADRAO = "https://script.google.com/macros/s/AKfycbwoVqBWaTxQ1wry43ONJp7cr_Mhf27FrFuL_AX0oUZmbx9oPJBZIyequYNgS6ROBMMc/exec";
+
+// ════════════════════════════════════════════
 //  ESTADO GLOBAL
 // ════════════════════════════════════════════
 let sistemas = [];
@@ -839,7 +839,7 @@ let editIdx = -1;
 let tabAtiva = 0;
 let viewerLink = "";
 let config = {
-  apiUrl: "",
+  apiUrl: API_URL_PADRAO,
   autoSync: true,
   darkMode: true
 };
@@ -852,9 +852,8 @@ function init() {
   carregarLocal();
   aplicarTema();
   render();
-  if (config.apiUrl) {
-    setTimeout(() => importarSheets(true), 800); // silencioso
-  }
+  // Sempre tenta importar do Sheets ao abrir (silencioso)
+  setTimeout(() => importarSheets(true), 800);
 }
 
 // ════════════════════════════════════════════
@@ -873,15 +872,19 @@ function salvarLocal() {
 function carregarConfig() {
   try {
     const c = JSON.parse(localStorage.getItem("hub_config_v2"));
-    if (c) config = { ...config, ...c };
+    if (c) {
+      config = { ...config, ...c };
+      // Garante que a URL padrão sempre prevalece se o localStorage estiver vazio
+      if (!config.apiUrl) config.apiUrl = API_URL_PADRAO;
+    }
   } catch {}
-  document.getElementById("cfgApiUrl").value = config.apiUrl || "";
+  document.getElementById("cfgApiUrl").value = config.apiUrl || API_URL_PADRAO;
   atualizarToggleAutoSync();
   atualizarToggleTheme();
 }
 
 function salvarConfig() {
-  config.apiUrl = document.getElementById("cfgApiUrl").value.trim();
+  config.apiUrl = document.getElementById("cfgApiUrl").value.trim() || API_URL_PADRAO;
   localStorage.setItem("hub_config_v2", JSON.stringify(config));
 }
 
@@ -1221,7 +1224,6 @@ async function testarConexao(){
   }
 }
 
-// Exporta tudo para o Sheets
 async function syncManual(){
   salvarConfig();
   if(!config.apiUrl){ toast('⚠️ Configure a URL do Apps Script','err'); openConfig(); return; }
@@ -1238,7 +1240,6 @@ async function syncManual(){
   }
 }
 
-// Upsert de um sistema individual
 async function syncUm(s){
   if(!config.apiUrl) return;
   try {
@@ -1249,7 +1250,6 @@ async function syncUm(s){
   }
 }
 
-// Importa dados do Sheets para o dashboard (sobrescreve)
 async function importarSheets(silencioso=false){
   salvarConfig();
   if(!config.apiUrl){ if(!silencioso) toast('⚠️ Configure a URL do Apps Script','err'); return; }
