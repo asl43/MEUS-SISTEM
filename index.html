@@ -828,7 +828,7 @@ body.light .btn-unlock { color: #fff; }
 // ════════════════════════════════════════════
 //  URL DO APPS SCRIPT — EMBUTIDA
 // ════════════════════════════════════════════
-const API_URL_PADRAO = "https://script.google.com/macros/s/AKfycbw0VWFug6tHyj-w9gjlha3BDFswE-rs6389dV0ZhnCkNeUtq5FilaG68rvfowmtw1Pn/exec";
+const API_URL_PADRAO = "https://script.google.com/macros/s/AKfycbwcMbywF_JmbZAK6pxHVqmDXjagWvt83N2jtqrHu3OZkXJ0mcrSCL1Q3baY5DKeMJLN/exec";
 
 // ════════════════════════════════════════════
 //  ESTADO GLOBAL
@@ -1237,12 +1237,19 @@ async function syncManual(){
 }
 
 async function syncUm(s){
-  if(!config.apiUrl) return;
+  if(!config.apiUrl) { console.warn("[Hub] apiUrl vazio"); return; }
+  console.log("[Hub] syncUm:", s.nome, "| URL:", config.apiUrl);
   try {
-    await apiPost({acao:'upsert', sistema:s});
-    setSyncStatus('ok','Salvo '+horaAtual());
+    const r = await apiPost({acao:"upsert", sistema:s});
+    console.log("[Hub] resposta:", JSON.stringify(r));
+    if(r && r.ok){
+      setSyncStatus("ok","Salvo "+horaAtual());
+      toast("☁️ \""+s.nome+"\" salvo no Sheets!","ok");
+    } else { throw new Error(r?.erro||"Resposta inválida"); }
   } catch(e){
-    setSyncStatus('err','Falha');
+    console.error("[Hub] syncUm erro:", e);
+    setSyncStatus("err","Falha ao salvar");
+    toast("❌ Não salvou no Sheets: "+e.message,"err");
   }
 }
 
