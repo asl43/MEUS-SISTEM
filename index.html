@@ -1197,15 +1197,11 @@ async function apiGet(params=''){
   return resp.json();
 }
 
+// Tudo via GET para evitar bloqueio de CORS do Google Apps Script
 async function apiPost(body){
-  const resp = await fetch(config.apiUrl, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(body),
-    mode:'cors'
-  });
-  if(!resp.ok) throw new Error('HTTP '+resp.status);
-  return resp.json();
+  const acao  = body.acao || 'salvar_tudo';
+  const dados = encodeURIComponent(JSON.stringify(body));
+  return apiGet('acao='+acao+'&dados='+dados);
 }
 
 async function testarConexao(){
